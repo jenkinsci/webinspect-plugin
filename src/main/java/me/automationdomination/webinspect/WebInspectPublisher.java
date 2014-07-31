@@ -1,6 +1,8 @@
 package me.automationdomination.webinspect;
 import hudson.Launcher;
 import hudson.Extension;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -21,7 +23,7 @@ import java.io.IOException;
  * <p>
  * When the user configures the project and enables this builder,
  * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked
- * and a new {@link HelloWorldBuilder} is created. The created
+ * and a new {@link WebInspectPublisher} is created. The created
  * instance is persisted to the project configuration XML by using
  * XStream, so this allows you to use instance fields (like {@link #name})
  * to remember the configuration.
@@ -32,21 +34,41 @@ import java.io.IOException;
  *
  * @author Kohsuke Kawaguchi
  */
-public class HelloWorldBuilder extends Builder {
+public class WebInspectPublisher extends Recorder {
 
-    private final String name;
+    private final String fprFile;
+    private final String settingsFile;
+    private final String projectVersionId;
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public HelloWorldBuilder(String name) {
-        this.name = name;
+    public WebInspectPublisher(String fprFile) {
+        this.fprFile = fprFile;
+    }
+
+    @DataBoundConstructor
+    public WebInspectPublisher(String settingsFile) {
+        this.fprFile = settingsFile;
+    }
+
+    @DataBoundConstructor
+    public WebInspectPublisher(String projectVersionId) {
+        this.fprFile = projectVersionId;
     }
 
     /**
      * We'll use this from the <tt>config.jelly</tt>.
      */
-    public String getName() {
-        return name;
+    public String getFprFile() {
+        return fprFile;
+    }
+
+    public String getSettingsFile() {
+        return settingsFile;
+    }
+
+    public String getProjectVersionId() {
+        return projectVersionId;
     }
 
     @Override
@@ -56,9 +78,9 @@ public class HelloWorldBuilder extends Builder {
 
         // This also shows how you can consult the global configuration of the builder
         if (getDescriptor().getUseFrench())
-            listener.getLogger().println("Bonjour, "+name+"!");
+            listener.getLogger().println("Bonjour, "+fprFile+"!");
         else
-            listener.getLogger().println("Hello, "+name+"!");
+            listener.getLogger().println("Hello, "+fprFile+"!");
         return true;
     }
 
@@ -70,16 +92,29 @@ public class HelloWorldBuilder extends Builder {
         return (DescriptorImpl)super.getDescriptor();
     }
 
+    public BuildStepMonitor getRequiredMonitorService() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /**
-     * Descriptor for {@link HelloWorldBuilder}. Used as a singleton.
+     * Descriptor for {@link WebInspectPublisher}. Used as a singleton.
      * The class is marked as public so that it can be accessed from views.
      *
      * <p>
-     * See <tt>src/main/resources/hudson/plugins/hello_world/HelloWorldBuilder/*.jelly</tt>
+     * See <tt>src/main/resources/hudson/plugins/hello_world/WebInspectPublisher/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
      */
     @Extension // This indicates to Jenkins that this is an implementation of an extension point.
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
+
+
+        private static final String DISPLAY_NAME = "Publish WebInspect Scan";
+
+        private static final String FORTIFY_URL_PARAMETER = "fortifyurl";
+        private static final String TOKEN_PARAMETER = "token";
+        private static final String WEBINSPECT_URL_PARAMETER = "webinspecturl";
+        private static final String FORTIFYCLIENT_PARAMETER = "fortifyclient";
+
         /**
          * To persist global configuration information,
          * simply store it in a field and call save().
@@ -87,7 +122,10 @@ public class HelloWorldBuilder extends Builder {
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
-        private boolean useFrench;
+        private String sscurl;
+        private String token;
+        private String webinspecturl;
+        private String fortifyclient;
 
         /**
          * In order to load the persisted global configuration, you have to 
@@ -134,7 +172,7 @@ public class HelloWorldBuilder extends Builder {
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             // To persist global configuration information,
             // set that to properties and call save().
-            useFrench = formData.getBoolean("useFrench");
+            //useFrench = formData.getBoolean("useFrench");
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setUseFrench)
             save();
@@ -147,8 +185,14 @@ public class HelloWorldBuilder extends Builder {
          * The method name is bit awkward because global.jelly calls this method to determine
          * the initial state of the checkbox by the naming convention.
          */
-        public boolean getUseFrench() {
-            return useFrench;
+        @Override
+
+        public String getUrl() {
+            return sscurl;
+        }
+
+        public String getToken() {
+            return token;
         }
     }
 }
