@@ -1,21 +1,24 @@
 package me.automationdomination.webinspect;
-import hudson.Launcher;
 import hudson.Extension;
+import hudson.Launcher;
+import hudson.model.BuildListener;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Builder;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.AbstractProject;
-import hudson.tasks.Builder;
-import hudson.tasks.BuildStepDescriptor;
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.QueryParameter;
+
+import java.io.IOException;
 
 import javax.servlet.ServletException;
-import java.io.IOException;
+
+import net.sf.json.JSONObject;
+
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Sample {@link Builder}.
@@ -36,43 +39,27 @@ import java.io.IOException;
  */
 public class WebInspectPublisher extends Recorder {
 
-    private final String fprFile;
-    private final String settingsFile;
-    private final String projectVersionId;
+	private final String fprFile;
+	private final String settingsFile;
+	private final String projectVersionId;
 
-    // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
-    @DataBoundConstructor
-    public WebInspectPublisher(String fprFile) {
-        this.fprFile = fprFile;
-    }
-
-    @DataBoundConstructor
-    public WebInspectPublisher(String settingsFile) {
-        this.fprFile = settingsFile;
-    }
-
-    @DataBoundConstructor
-    public WebInspectPublisher(String projectVersionId) {
-        this.fprFile = projectVersionId;
-    }
-
-    /**
-     * We'll use this from the <tt>config.jelly</tt>.
-     */
-    public String getFprFile() {
-        return fprFile;
-    }
-
-    public String getSettingsFile() {
-        return settingsFile;
-    }
-
-    public String getProjectVersionId() {
-        return projectVersionId;
-    }
+	// Fields in config.jelly must match the parameter names in the
+	// "DataBoundConstructor"
+	@DataBoundConstructor
+	public WebInspectPublisher(
+			final String fprFile, 
+			final String settingsFile,
+			final String projectVersionId) {
+		this.fprFile = fprFile;
+		this.settingsFile = settingsFile;
+		this.projectVersionId = projectVersionId;
+	}
 
     @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+    public boolean perform(
+    		final AbstractBuild<?, ?> build, 
+    		final Launcher launcher, 
+    		final BuildListener listener) {
         // This is where you 'build' the project.
         // Since this is a dummy, we just say 'hello world' and call that a build.
 
@@ -84,16 +71,26 @@ public class WebInspectPublisher extends Recorder {
         return true;
     }
 
-    // Overridden for better type safety.
-    // If your plugin doesn't really define any property on Descriptor,
-    // you don't have to do this.
-    @Override
-    public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl)super.getDescriptor();
+	@Override
+	public DescriptorImpl getDescriptor() {
+		return (DescriptorImpl) super.getDescriptor();
+	}
+
+	@Override
+    public BuildStepMonitor getRequiredMonitorService() {
+		return BuildStepMonitor.NONE; // NONE since this is not dependent on the last step
+    }
+    
+    public String getFprFile() {
+        return fprFile;
     }
 
-    public BuildStepMonitor getRequiredMonitorService() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public String getSettingsFile() {
+        return settingsFile;
+    }
+
+    public String getProjectVersionId() {
+        return projectVersionId;
     }
 
     /**
@@ -135,7 +132,12 @@ public class WebInspectPublisher extends Recorder {
             load();
         }
 
-        /**
+        public boolean getUseFrench() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		/**
          * Performs on-the-fly validation of the form field 'name'.
          *
          * @param value
@@ -185,8 +187,7 @@ public class WebInspectPublisher extends Recorder {
          * The method name is bit awkward because global.jelly calls this method to determine
          * the initial state of the checkbox by the naming convention.
          */
-        @Override
-
+        //@Override
         public String getUrl() {
             return sscurl;
         }
