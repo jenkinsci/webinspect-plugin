@@ -1,4 +1,4 @@
-package me.automationdomination.webinspect;
+package me.automationdomination.plugins.webinspect;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
