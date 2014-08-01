@@ -10,6 +10,7 @@ import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 
 import java.io.PrintStream;
 
@@ -38,7 +39,7 @@ import org.kohsuke.stapler.StaplerRequest;
  */
 public class WebInspectPublisher extends Recorder {
 
-	private final String fprFile;
+	private final String fprScanFile;
 	private final String settingsFile;
 	private final String projectVersionId;
 
@@ -49,7 +50,7 @@ public class WebInspectPublisher extends Recorder {
 			final String fprFile, 
 			final String settingsFile,
 			final String projectVersionId) {
-		this.fprFile = fprFile;
+		this.fprScanFile = fprFile;
 		this.settingsFile = settingsFile;
 		this.projectVersionId = projectVersionId;
 	}
@@ -77,7 +78,7 @@ public class WebInspectPublisher extends Recorder {
     }
     
     public String getFprFile() {
-        return fprFile;
+        return fprScanFile;
     }
 
     public String getSettingsFile() {
@@ -162,6 +163,28 @@ public class WebInspectPublisher extends Recorder {
             
             save();
             return super.configure(staplerRequest,formData);
+        }
+        
+        public ListBoxModel doFillSettingsFileItems() {
+        	final ListBoxModel settingsFileItems = new ListBoxModel();
+        	
+        	settingsFileItems.add("settings_one", "1");
+        	settingsFileItems.add("settings_two", "2");
+        	settingsFileItems.add("settings_three", "3");
+        	settingsFileItems.add("settings_four", "4");
+        	
+        	return settingsFileItems;
+        }
+        
+        public ListBoxModel doFillProjectVersionIdItems() {
+        	final ListBoxModel projectVersionIdItems = new ListBoxModel();
+        	
+        	projectVersionIdItems.add("project_one", "1");
+        	projectVersionIdItems.add("project_two", "2");
+        	projectVersionIdItems.add("project_three", "3");
+        	projectVersionIdItems.add("project_four", "4");
+        	
+        	return projectVersionIdItems;
         }
 
         /**
