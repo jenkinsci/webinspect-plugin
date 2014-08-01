@@ -137,28 +137,28 @@ public class WebInspectPublisher extends Recorder {
             load();
         }
         
-		public FormValidation doCheckFortifyClientPathName(@QueryParameter String pathName) {
+		public FormValidation doCheckFortifyClientPathName(@QueryParameter final String pathName) {
 			if (!fileValidator.isValid(pathName))
 				return FormValidation.error("forify client path name \"" + pathName + "\" is invalid");
 
 			return FormValidation.ok();
 		}
         
-        public FormValidation doCheckSscUrl(@QueryParameter String url) {
+        public FormValidation doCheckSscUrl(@QueryParameter final String url) {
         	if (!urlValidator.isValid(url)) 
         		return FormValidation.error("ssc url \"" + url + "\" is invalid");
 
         	return FormValidation.ok();
         }
         
-        public FormValidation doCheckToken(@QueryParameter String token) {
+        public FormValidation doCheckToken(@QueryParameter final String token) {
         	if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
         		return FormValidation.error("fortify server api key \"" + token + "\" is invalid");
 
         	return FormValidation.ok();
         }
         
-		public FormValidation doCheckWebInspectUrl(@QueryParameter String url) {
+		public FormValidation doCheckWebInspectUrl(@QueryParameter final String url) {
         	if (!urlValidator.isValid(url)) 
         		return FormValidation.error("web inspect url \"" + url + "\" is invalid");
 
