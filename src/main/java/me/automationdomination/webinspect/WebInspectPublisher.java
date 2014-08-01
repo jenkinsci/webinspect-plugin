@@ -10,9 +10,7 @@ import hudson.tasks.Builder;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
+import java.io.PrintStream;
 
 import net.sf.json.JSONObject;
 
@@ -60,14 +58,10 @@ public class WebInspectPublisher extends Recorder {
     		final AbstractBuild<?, ?> build, 
     		final Launcher launcher, 
     		final BuildListener listener) {
-        // This is where you 'build' the project.
-        // Since this is a dummy, we just say 'hello world' and call that a build.
-
-        // This also shows how you can consult the global configuration of the builder
-        if (getDescriptor().getUseFrench())
-            listener.getLogger().println("Bonjour, "+fprFile+"!");
-        else
-            listener.getLogger().println("Hello, "+fprFile+"!");
+        final PrintStream log = launcher.getListener().getLogger();
+        
+        log.println("hello, world!");
+        
         return true;
     }
 
@@ -104,13 +98,12 @@ public class WebInspectPublisher extends Recorder {
     @Extension // This indicates to Jenkins that this is an implementation of an extension point.
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
-
         private static final String DISPLAY_NAME = "Publish WebInspect Scan";
 
-        private static final String FORTIFY_URL_PARAMETER = "fortifyurl";
+        private static final String FORTIFY_CLIENT_PATH_NAME_PARAMETER = "fortifyClientPathName";
+        private static final String SSC_URL_PARAMETER = "sscUrl";
         private static final String TOKEN_PARAMETER = "token";
-        private static final String WEBINSPECT_URL_PARAMETER = "webinspecturl";
-        private static final String FORTIFYCLIENT_PARAMETER = "fortifyclient";
+        private static final String WEB_INSPECT_URL_PARAMETER = "webInspectUrl";
 
         /**
          * To persist global configuration information,
@@ -119,10 +112,10 @@ public class WebInspectPublisher extends Recorder {
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
-        private String sscurl;
+        private String fortifyClientPathName;
+        private String sscUrl;
         private String token;
-        private String webinspecturl;
-        private String fortifyclient;
+        private String webInspectUrl;
 
         /**
          * In order to load the persisted global configuration, you have to 
@@ -131,70 +124,68 @@ public class WebInspectPublisher extends Recorder {
         public DescriptorImpl() {
             load();
         }
-
-        public boolean getUseFrench() {
-			// TODO Auto-generated method stub
-			return false;
+        
+        public FormValidation doCheckFortifyClientPathName(@QueryParameter String value) {
+        	// TODO: implement me
+        	return FormValidation.ok();
+        }
+        
+        public FormValidation doCheckSscUrl(@QueryParameter String value) {
+        	// TODO: implement me
+        	return FormValidation.ok();
+        }
+        
+        public FormValidation doCheckToken(@QueryParameter String value) {
+        	// TODO: implement me
+        	return FormValidation.ok();
+        }
+        
+		public FormValidation doCheckWebInspectUrl(@QueryParameter String value) {
+			// TODO: implement me
+			return FormValidation.ok();
 		}
 
-		/**
-         * Performs on-the-fly validation of the form field 'name'.
-         *
-         * @param value
-         *      This parameter receives the value that the user has typed.
-         * @return
-         *      Indicates the outcome of the validation. This is sent to the browser.
-         *      <p>
-         *      Note that returning {@link FormValidation#error(String)} does not
-         *      prevent the form from being saved. It just means that a message
-         *      will be displayed to the user. 
-         */
-        public FormValidation doCheckName(@QueryParameter String value)
-                throws IOException, ServletException {
-            if (value.length() == 0)
-                return FormValidation.error("Please set a name");
-            if (value.length() < 4)
-                return FormValidation.warning("Isn't the name too short?");
-            return FormValidation.ok();
-        }
-
-        public boolean isApplicable(Class<? extends AbstractProject> aClass) {
-            // Indicates that this builder can be used with all kinds of project types 
-            return true;
+		public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
+			// Indicates that this builder can be used with all kinds of project
+			// types
+			return true;
+		}
+		
+        @Override
+        public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
+        	// TODO: validate all these parameters
+        	fortifyClientPathName = formData.getString(FORTIFY_CLIENT_PATH_NAME_PARAMETER);
+        	sscUrl = formData.getString(SSC_URL_PARAMETER);
+        	token = formData.getString(TOKEN_PARAMETER);
+        	webInspectUrl = formData.getString(WEB_INSPECT_URL_PARAMETER);
+            
+            save();
+            return super.configure(staplerRequest,formData);
         }
 
         /**
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "Say hello world";
+            return DISPLAY_NAME;
         }
 
-        @Override
-        public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-            // To persist global configuration information,
-            // set that to properties and call save().
-            //useFrench = formData.getBoolean("useFrench");
-            // ^Can also use req.bindJSON(this, formData);
-            //  (easier when there are many fields; need set* methods for this, like setUseFrench)
-            save();
-            return super.configure(req,formData);
-        }
+		public String getFortifyClientPathName() {
+			return fortifyClientPathName;
+		}
 
-        /**
-         * This method returns true if the global configuration says we should speak French.
-         *
-         * The method name is bit awkward because global.jelly calls this method to determine
-         * the initial state of the checkbox by the naming convention.
-         */
-        //@Override
-        public String getUrl() {
-            return sscurl;
-        }
+		public String getSscUrl() {
+			return sscUrl;
+		}
 
-        public String getToken() {
-            return token;
-        }
+		public String getToken() {
+			return token;
+		}
+
+		public String getWebInspectUrl() {
+			return webInspectUrl;
+		}
+
     }
 }
 
