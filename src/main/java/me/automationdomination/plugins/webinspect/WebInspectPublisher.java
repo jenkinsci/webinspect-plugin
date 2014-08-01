@@ -14,6 +14,11 @@ import hudson.util.ListBoxModel;
 
 import java.io.PrintStream;
 
+import me.automationdomination.plugins.webinspect.validation.ApacheCommonsUrlValidator;
+import me.automationdomination.plugins.webinspect.validation.ApiKeyStringValidator;
+import me.automationdomination.plugins.webinspect.validation.ConfigurationValueValidator;
+import me.automationdomination.plugins.webinspect.validation.FileValidator;
+import me.automationdomination.plugins.webinspect.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -118,6 +123,11 @@ public class WebInspectPublisher extends Recorder {
         private String sscUrl;
         private String token;
         private String webInspectUrl;
+        
+		private final ConfigurationValueValidator fileValidator = new FileValidator();
+		private final ConfigurationValueValidator simpleStringValidator = new SimpleStringValidator();
+		private final ConfigurationValueValidator apiKeyStringValidator = new ApiKeyStringValidator();
+		private final ConfigurationValueValidator urlValidator = new ApacheCommonsUrlValidator();
 
         /**
          * In order to load the persisted global configuration, you have to 
@@ -127,24 +137,32 @@ public class WebInspectPublisher extends Recorder {
             load();
         }
         
-        public FormValidation doCheckFortifyClientPathName(@QueryParameter String value) {
-        	// TODO: implement me
-        	return FormValidation.ok();
-        }
-        
-        public FormValidation doCheckSscUrl(@QueryParameter String value) {
-        	// TODO: implement me
-        	return FormValidation.ok();
-        }
-        
-        public FormValidation doCheckToken(@QueryParameter String value) {
-        	// TODO: implement me
-        	return FormValidation.ok();
-        }
-        
-		public FormValidation doCheckWebInspectUrl(@QueryParameter String value) {
-			// TODO: implement me
+		public FormValidation doCheckFortifyClientPathName(@QueryParameter String pathName) {
+			if (!fileValidator.isValid(pathName))
+				return FormValidation.error("forify client path name \"" + pathName + "\" is invalid");
+
 			return FormValidation.ok();
+		}
+        
+        public FormValidation doCheckSscUrl(@QueryParameter String url) {
+        	if (!urlValidator.isValid(url)) 
+        		return FormValidation.error("ssc url \"" + url + "\" is invalid");
+
+        	return FormValidation.ok();
+        }
+        
+        public FormValidation doCheckToken(@QueryParameter String token) {
+        	if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
+        		return FormValidation.error("fortify server api key \"" + token + "\" is invalid");
+
+        	return FormValidation.ok();
+        }
+        
+		public FormValidation doCheckWebInspectUrl(@QueryParameter String url) {
+        	if (!urlValidator.isValid(url)) 
+        		return FormValidation.error("web inspect url \"" + url + "\" is invalid");
+
+        	return FormValidation.ok();
 		}
 
 		public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
@@ -157,10 +175,29 @@ public class WebInspectPublisher extends Recorder {
         public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
         	// TODO: validate all these parameters
         	fortifyClientPathName = formData.getString(FORTIFY_CLIENT_PATH_NAME_PARAMETER);
+        	
+        	if (!fileValidator.isValid(fortifyClientPathName))
+				throw new FormException("forify client path name \"" + fortifyClientPathName + "\" is invalid", FORTIFY_CLIENT_PATH_NAME_PARAMETER);
+        	
+        	
         	sscUrl = formData.getString(SSC_URL_PARAMETER);
+
+        	if (!urlValidator.isValid(sscUrl)) 
+        		throw new FormException("ssc url \"" + sscUrl + "\" is invalid", FORTIFY_CLIENT_PATH_NAME_PARAMETER);
+        	
+        	
         	token = formData.getString(TOKEN_PARAMETER);
+        	
+        	if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
+        		throw new FormException("fortify server api key \"" + token + "\" is invalid", TOKEN_PARAMETER);
+        	
+        	
         	webInspectUrl = formData.getString(WEB_INSPECT_URL_PARAMETER);
+        	
+        	if (!urlValidator.isValid(webInspectUrl)) 
+        		throw new FormException("web inspect url \"" + webInspectUrl + "\" is invalid", WEB_INSPECT_URL_PARAMETER);
             
+        	
             save();
             return super.configure(staplerRequest,formData);
         }
