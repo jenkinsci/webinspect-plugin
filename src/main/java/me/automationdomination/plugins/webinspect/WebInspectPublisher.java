@@ -207,8 +207,8 @@ public class WebInspectPublisher extends Recorder {
         	
         	settingsFileItems.add("default", "1");
         	settingsFileItems.add("automation domination", "2");
-        	settingsFileItems.add("web goat", "3");
-        	settingsFileItems.add("commerce4j", "4");
+        	settingsFileItems.add("WebGoat", "3");
+        	settingsFileItems.add("Commerce-4j", "4");
         	
         	return settingsFileItems;
         }
@@ -216,8 +216,8 @@ public class WebInspectPublisher extends Recorder {
         public ListBoxModel doFillProjectVersionIdItems() {
         	final ListBoxModel projectVersionIdItems = new ListBoxModel();
         	
-        	projectVersionIdItems.add("web goat - snapshot", "1");
-        	projectVersionIdItems.add("web goat - release", "2");
+        	projectVersionIdItems.add("WebGoat-snapshot", "1");
+        	projectVersionIdItems.add("WebGoat-release", "2");
         	
         	return projectVersionIdItems;
         }
