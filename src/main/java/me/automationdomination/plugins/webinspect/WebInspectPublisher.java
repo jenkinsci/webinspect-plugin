@@ -107,7 +107,7 @@ public class WebInspectPublisher extends Recorder {
 
         private static final String DISPLAY_NAME = "Publish WebInspect Scan";
 
-        private static final String FORTIFY_CLIENT_PATH_NAME_PARAMETER = "fortifyClientPathName";
+        private static final String FORTIFY_CLIENT_PARAMETER = "fortifyClient";
         private static final String SSC_URL_PARAMETER = "sscUrl";
         private static final String TOKEN_PARAMETER = "token";
         private static final String WEB_INSPECT_URL_PARAMETER = "webInspectUrl";
@@ -119,7 +119,7 @@ public class WebInspectPublisher extends Recorder {
          * <p>
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
-        private String fortifyClientPathName;
+        private String fortifyClient;
         private String sscUrl;
         private String token;
         private String webInspectUrl;
@@ -137,7 +137,7 @@ public class WebInspectPublisher extends Recorder {
             load();
         }
         
-		public FormValidation doCheckFortifyClientPathName(@QueryParameter final String pathName) {
+		public FormValidation doCheckFortifyClient(@QueryParameter final String pathName) {
 			if (!fileValidator.isValid(pathName))
 				return FormValidation.error("forify client path name \"" + pathName + "\" is invalid");
 
@@ -174,16 +174,16 @@ public class WebInspectPublisher extends Recorder {
         @Override
         public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
         	// TODO: validate all these parameters
-        	fortifyClientPathName = formData.getString(FORTIFY_CLIENT_PATH_NAME_PARAMETER);
+        	fortifyClient = formData.getString(FORTIFY_CLIENT_PARAMETER);
         	
-        	if (!fileValidator.isValid(fortifyClientPathName))
-				throw new FormException("forify client path name \"" + fortifyClientPathName + "\" is invalid", FORTIFY_CLIENT_PATH_NAME_PARAMETER);
+        	if (!fileValidator.isValid(fortifyClient))
+				throw new FormException("forify client path name \"" + fortifyClient + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
         	
         	
         	sscUrl = formData.getString(SSC_URL_PARAMETER);
 
         	if (!urlValidator.isValid(sscUrl)) 
-        		throw new FormException("ssc url \"" + sscUrl + "\" is invalid", FORTIFY_CLIENT_PATH_NAME_PARAMETER);
+        		throw new FormException("ssc url \"" + sscUrl + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
         	
         	
         	token = formData.getString(TOKEN_PARAMETER);
@@ -229,8 +229,8 @@ public class WebInspectPublisher extends Recorder {
             return DISPLAY_NAME;
         }
 
-		public String getFortifyClientPathName() {
-			return fortifyClientPathName;
+		public String getFortifyClient() {
+			return fortifyClient;
 		}
 
 		public String getSscUrl() {
