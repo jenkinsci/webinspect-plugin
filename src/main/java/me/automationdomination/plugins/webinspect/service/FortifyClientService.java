@@ -1,5 +1,11 @@
 package me.automationdomination.plugins.webinspect.service;
 
+import me.automationdomination.plugins.webinspect.exceptions.InvalidFortifyClientException;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: bspruth
@@ -9,20 +15,42 @@ package me.automationdomination.plugins.webinspect.service;
  */
 public class FortifyClientService {
 
-    private final String sscUrl;
-    private final String token;
-
+    private String fortifyClient;
+    private String sscUrl;
+    private String sscToken;
 
     //private final FortifyWsClient fortifyWsClient = new FortifyWsClientImpl();
+    // TODO: system command to fortifyclient
 
-    public FortifyClientService(
-            final String sscUrl,
-            final String token) {
-        super();
-        this.sscUrl = sscUrl;
-        this.token = token;
+        public FortifyClientService (String sscUrl, String sscToken, String fortifyClient) {
+            this.sscUrl = sscUrl;
+            this.sscToken = sscToken;
+            this.fortifyClient = fortifyClient;
+        }
+        public static void validateFortifyConnection(String sscUrl, String sscToken, String fortifyClient) {
+            String[] command = {fortifyClient, "listProjectVersions", "-machineoutput", "-authtoken", sscToken, "-url", sscUrl};
+            ListProjectsProcessService listProjectsProcessService = new ListProjectsProcessService ();
+            //ExternalProcess process = new ExternalProcess(command , listProjectsProcessService );
+            //process.execute();
+            //listProjectsProcessService.throwSpecificExceptions();
+            return;
+        }
+
+    public Map<Long, String> getProjects() {
+        HashMap<Long, String> projects;
+        String[] command = {fortifyClient, "listProjectVersions", "-machineoutput", "-authtoken", sscToken, "-url", sscUrl};
+        ListProjectsProcessService listProjectsProcessService = new ListProjectsProcessService();
+        //ExternalProcess process = new ExternalProcess(command , listProjectsProcessService );
+        //process.execute();
+        projects = listProjectsProcessService.getProjects();
+        return projects;
     }
 
-    // TODO: system command to fortifyclient
-    //
+    private static void validateFortifyClient(String fortifyClientPath) throws InvalidFortifyClientException {
+        File fortifyClient = new File(fortifyClientPath);
+        if ( ! fortifyClient.exists() ) {
+            throw new InvalidFortifyClientException("That is not a valid Fortify Client path");
+        }
+
+    }
 }

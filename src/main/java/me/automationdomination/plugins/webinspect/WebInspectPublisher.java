@@ -1,47 +1,23 @@
 package me.automationdomination.plugins.webinspect;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.io.PrintStream;
-
-import me.automationdomination.plugins.webinspect.validation.ApacheCommonsUrlValidator;
-import me.automationdomination.plugins.webinspect.validation.ApiKeyStringValidator;
-import me.automationdomination.plugins.webinspect.validation.ConfigurationValueValidator;
-import me.automationdomination.plugins.webinspect.validation.FileValidator;
-import me.automationdomination.plugins.webinspect.validation.SimpleStringValidator;
+import me.automationdomination.plugins.webinspect.validation.*;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-/**
- * Sample {@link Builder}.
- *
- * <p>
- * When the user configures the project and enables this builder,
- * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked
- * and a new {@link WebInspectPublisher} is created. The created
- * instance is persisted to the project configuration XML by using
- * XStream, so this allows you to use instance fields (like {@link #name})
- * to remember the configuration.
- *
- * <p>
- * When a build is performed, the {@link #perform(AbstractBuild, Launcher, BuildListener)}
- * method will be invoked. 
- *
- * @author Kohsuke Kawaguchi
- */
+import java.io.PrintStream;
+
 public class WebInspectPublisher extends Recorder {
 
 	private final String fprScanFile;
@@ -109,7 +85,7 @@ public class WebInspectPublisher extends Recorder {
 
         private static final String FORTIFY_CLIENT_PARAMETER = "fortifyClient";
         private static final String SSC_URL_PARAMETER = "sscUrl";
-        private static final String TOKEN_PARAMETER = "token";
+        private static final String TOKEN_PARAMETER = "sscToken";
         private static final String WEB_INSPECT_URL_PARAMETER = "webInspectUrl";
 
         /**
@@ -121,7 +97,7 @@ public class WebInspectPublisher extends Recorder {
          */
         private String fortifyClient;
         private String sscUrl;
-        private String token;
+        private String sscToken;
         private String webInspectUrl;
         
 		private final ConfigurationValueValidator fileValidator = new FileValidator();
@@ -144,16 +120,16 @@ public class WebInspectPublisher extends Recorder {
 			return FormValidation.ok();
 		}
         
-        public FormValidation doCheckSscUrl(@QueryParameter final String url) {
-        	if (!urlValidator.isValid(url)) 
-        		return FormValidation.error("ssc url \"" + url + "\" is invalid");
+        public FormValidation doCheckSscUrl(@QueryParameter final String sscUrl) {
+        	if (!urlValidator.isValid(sscUrl))
+        		return FormValidation.error("ssc url \"" + sscUrl + "\" is invalid");
 
         	return FormValidation.ok();
         }
         
-        public FormValidation doCheckToken(@QueryParameter final String token) {
-        	if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
-        		return FormValidation.error("fortify server api key \"" + token + "\" is invalid");
+        public FormValidation doCheckToken(@QueryParameter final String sscToken) {
+        	if (!(simpleStringValidator.isValid(sscToken) && apiKeyStringValidator.isValid(sscToken)))
+        		return FormValidation.error("fortify server api key \"" + sscToken + "\" is invalid");
 
         	return FormValidation.ok();
         }
@@ -186,10 +162,10 @@ public class WebInspectPublisher extends Recorder {
         		throw new FormException("ssc url \"" + sscUrl + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
         	
         	
-        	token = formData.getString(TOKEN_PARAMETER);
+        	sscToken = formData.getString(TOKEN_PARAMETER);
         	
-        	if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
-        		throw new FormException("fortify server api key \"" + token + "\" is invalid", TOKEN_PARAMETER);
+        	if (!(simpleStringValidator.isValid(sscToken) && apiKeyStringValidator.isValid(sscToken)))
+        		throw new FormException("fortify server api key \"" + sscToken + "\" is invalid", TOKEN_PARAMETER);
         	
         	
         	webInspectUrl = formData.getString(WEB_INSPECT_URL_PARAMETER);
@@ -206,21 +182,27 @@ public class WebInspectPublisher extends Recorder {
         	final ListBoxModel settingsFileItems = new ListBoxModel();
         	
         	settingsFileItems.add("default", "1");
-        	settingsFileItems.add("automation domination", "2");
+        	settingsFileItems.add("AutomationDomination", "2");
         	settingsFileItems.add("WebGoat", "3");
         	settingsFileItems.add("Commerce-4j", "4");
         	
         	return settingsFileItems;
         }
-        
+
         public ListBoxModel doFillProjectVersionIdItems() {
         	final ListBoxModel projectVersionIdItems = new ListBoxModel();
-        	
+            /**
+
+            //TODO: Need to add FortifyClientService to build list of projectVersionIdItems
+
+            return projectVersionIdItems;
+             */
         	projectVersionIdItems.add("WebGoat-snapshot", "1");
         	projectVersionIdItems.add("WebGoat-release", "2");
-        	
+
+
         	return projectVersionIdItems;
-        }
+    }
 
         /**
          * This human readable name is used in the configuration screen.
@@ -238,12 +220,13 @@ public class WebInspectPublisher extends Recorder {
 		}
 
 		public String getToken() {
-			return token;
+			return sscToken;
 		}
 
-		public String getWebInspectUrl() {
+        public String getWebInspectUrl() {
 			return webInspectUrl;
 		}
+
 
     }
 }

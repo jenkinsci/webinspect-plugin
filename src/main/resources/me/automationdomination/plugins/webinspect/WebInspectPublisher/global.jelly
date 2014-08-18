@@ -9,7 +9,7 @@
     <f:entry title="Fortify SSC Token" description="Fortify SSC Token to upload scan results (i.e. AnalysisUploadToken)" field="token">
       <f:password/>
     </f:entry>
-    <f:entry title="WebInspect API URL" description="WebInspect API URL (i.e. http://example.com:8183/webinspect/scanner)" field="webInspectUrl">
+    <f:entry title="WebInspect API URL" description="WebInspect REST API (i.e. http://example.com:8183/webinspect/scanner)" field="webInspectUrl">
       <f:textbox/>
     </f:entry>
   </f:section>

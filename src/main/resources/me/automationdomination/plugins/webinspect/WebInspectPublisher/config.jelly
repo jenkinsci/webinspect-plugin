@@ -1,11 +1,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <f:entry title="FPR Scan File" description="WebInspect FPR Scan File" field="fprScanFile">
+  <f:entry title="WebInspect Scan File" description="WebInspect FPR formatted Scan File" field="fprScanFile">
     <f:textbox />
   </f:entry>
   <f:entry title="WebInspect Scan Settings" description="WebInspect settings file associated with your scan" field="settingsFile">
     <f:select />
   </f:entry>
-  <f:entry title="Fortify SSC Project and Version name" description="The Project and Version to upload the WebInspect scan results." field="projectVersionId">
+  <f:entry title="Fortify SSC Project / Version" description="The Project and Version on the SSC server to upload the WebInspect scan results in .fpr format." field="projectVersionId">
     <f:select />
   </f:entry>
 </j:jelly>
