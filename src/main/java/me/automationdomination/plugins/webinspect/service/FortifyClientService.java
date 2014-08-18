@@ -1,8 +1,5 @@
 package me.automationdomination.plugins.webinspect.service;
 
-import me.automationdomination.plugins.webinspect.exceptions.InvalidFortifyClientException;
-
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,13 +41,5 @@ public class FortifyClientService {
         //process.execute();
         projects = listProjectsProcessService.getProjects();
         return projects;
-    }
-
-    private static void validateFortifyClient(String fortifyClientPath) throws InvalidFortifyClientException {
-        File fortifyClient = new File(fortifyClientPath);
-        if ( ! fortifyClient.exists() ) {
-            throw new InvalidFortifyClientException("That is not a valid Fortify Client path");
-        }
-
     }
 }
