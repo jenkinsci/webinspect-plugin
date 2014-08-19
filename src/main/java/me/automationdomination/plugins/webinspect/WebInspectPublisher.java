@@ -115,28 +115,28 @@ public class WebInspectPublisher extends Recorder {
         
 		public FormValidation doCheckFortifyClient(@QueryParameter final String pathName) {
 			if (!fileValidator.isValid(pathName))
-				return FormValidation.error("forify client path name \"" + pathName + "\" is invalid");
+				return FormValidation.error("Location of the fortifyclient path \"" + pathName + "\" is invalid");
 
 			return FormValidation.ok();
 		}
         
         public FormValidation doCheckSscUrl(@QueryParameter final String sscUrl) {
         	if (!urlValidator.isValid(sscUrl))
-        		return FormValidation.error("ssc url \"" + sscUrl + "\" is invalid");
+        		return FormValidation.error("SSC Fortify URL \"" + sscUrl + "\" is invalid");
 
         	return FormValidation.ok();
         }
         
         public FormValidation doCheckToken(@QueryParameter final String sscToken) {
         	if (!(simpleStringValidator.isValid(sscToken) && apiKeyStringValidator.isValid(sscToken)))
-        		return FormValidation.error("fortify server api key \"" + sscToken + "\" is invalid");
+        		return FormValidation.error("SSC Fortify token \"" + sscToken + "\" is invalid");
 
         	return FormValidation.ok();
         }
         
 		public FormValidation doCheckWebInspectUrl(@QueryParameter final String url) {
         	if (!urlValidator.isValid(url)) 
-        		return FormValidation.error("web inspect url \"" + url + "\" is invalid");
+        		return FormValidation.error("WebInspect REST API URL \"" + url + "\" is invalid");
 
         	return FormValidation.ok();
 		}
@@ -153,25 +153,25 @@ public class WebInspectPublisher extends Recorder {
         	fortifyClient = formData.getString(FORTIFY_CLIENT_PARAMETER);
         	
         	if (!fileValidator.isValid(fortifyClient))
-				throw new FormException("forify client path name \"" + fortifyClient + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
+				throw new FormException("Location of the fortifyclient path \"" + fortifyClient + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
         	
         	
         	sscUrl = formData.getString(SSC_URL_PARAMETER);
 
         	if (!urlValidator.isValid(sscUrl)) 
-        		throw new FormException("ssc url \"" + sscUrl + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
+        		throw new FormException("SSC URL \"" + sscUrl + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
         	
         	
         	sscToken = formData.getString(TOKEN_PARAMETER);
         	
         	if (!(simpleStringValidator.isValid(sscToken) && apiKeyStringValidator.isValid(sscToken)))
-        		throw new FormException("fortify server api key \"" + sscToken + "\" is invalid", TOKEN_PARAMETER);
+        		throw new FormException("SSC Fortify Token \"" + sscToken + "\" is invalid", TOKEN_PARAMETER);
         	
         	
         	webInspectUrl = formData.getString(WEB_INSPECT_URL_PARAMETER);
         	
         	if (!urlValidator.isValid(webInspectUrl)) 
-        		throw new FormException("web inspect url \"" + webInspectUrl + "\" is invalid", WEB_INSPECT_URL_PARAMETER);
+        		throw new FormException("WebInspect REST API URL \"" + webInspectUrl + "\" is invalid", WEB_INSPECT_URL_PARAMETER);
             
         	
             save();
