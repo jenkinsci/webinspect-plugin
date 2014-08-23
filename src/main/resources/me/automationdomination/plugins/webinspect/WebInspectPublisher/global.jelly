@@ -1,16 +1,17 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:section title="WebInspect">
-    <f:entry title="Fortifyclient Path Name" description="Absolute path to fortifyclient executable (i.e. /opt/HP_Fortify/bin/fortifyclient)" field="fortifyClientPathName">
+    <f:entry title="Path to fortifyclient " description="Absolute path to fortifyclient executable (i.e. /opt/HP_Fortify/bin/fortifyclient)" field="fortifyClient">
       <f:textbox/>
     </f:entry>
-    <f:entry title="Fortify SSC URL" description="URL to Fortify SSC Server (i.e. https://example.com/ssc)" field="sscUrl">
+    <f:entry title="Fortify SSC URL" description="URL to Fortify SSC Server (i.e. https://example.com:8080/ssc)" field="sscUrl">
       <f:textbox/>
     </f:entry>
-    <f:entry title="Fortify SSC Token" description="Fortify SSC Token to upload scan results (i.e. AnalysisUploadToken)" field="token">
+    <f:entry title="Fortify SSC Token" description="Fortify SSC Token to upload scan results (i.e. AnalysisUploadToken)" field="sscToken">
       <f:password/>
     </f:entry>
-    <f:entry title="WebInspect API URL" description="WebInspect REST API (i.e. http://example.com:8183/webinspect/scanner)" field="webInspectUrl">
+    <f:entry title="WebInspect API URL" description="WebInspect REST API (i.e. http://example.com:8083/webinspect/scanner)" field="webInspectUrl">
       <f:textbox/>
     </f:entry>
+    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="webInspectUrl"/>
   </f:section>
 </j:jelly>

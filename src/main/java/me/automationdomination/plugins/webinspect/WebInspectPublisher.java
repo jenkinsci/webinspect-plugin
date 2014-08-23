@@ -177,10 +177,11 @@ public class WebInspectPublisher extends Recorder {
             save();
             return super.configure(staplerRequest,formData);
         }
-        
+        //WebInspect Settings
         public ListBoxModel doFillSettingsFileItems() {
         	final ListBoxModel settingsFileItems = new ListBoxModel();
-        	
+
+
         	settingsFileItems.add("default", "1");
         	settingsFileItems.add("AutomationDomination", "2");
         	settingsFileItems.add("WebGoat", "3");
