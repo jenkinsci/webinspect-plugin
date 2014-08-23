@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:entry title="WebInspect Scan File" description="WebInspect FPR formatted Scan File" field="fprScanFile">
-    <f:textbox />
+    <f:textbox default="&#36;BUILD&#95;TAG&#46;fpr"/>
   </f:entry>
   <f:entry title="WebInspect Scan Settings" description="WebInspect settings file associated with your scan" field="settingsFile">
     <f:select />
