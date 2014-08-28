@@ -68,6 +68,8 @@
 		<commons.validator.version>1.4.0</commons.validator.version>
 		<junit.version>4.11</junit.version>
 		<easymock.version>3.2</easymock.version>
+		<httpclient.version>4.3.5</httpclient.version>
+		<jackson.databind.version>2.4.2</jackson.databind.version>
 	</properties>
 
 	<dependencies>
@@ -86,6 +88,16 @@
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
 			<version>${commons.validator.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${httpclient.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.databind.version}</version>
 		</dependency>
 	</dependencies>
 	
