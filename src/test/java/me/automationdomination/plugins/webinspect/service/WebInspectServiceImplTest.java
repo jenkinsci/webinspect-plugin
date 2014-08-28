@@ -21,7 +21,7 @@ public class WebInspectServiceImplTest {
 	@Test
 	public void retrieveScanFileTest() {
 		final WebInspectServiceImpl webInspectServiceImpl = new WebInspectServiceImpl("http://192.168.56.101:8083/webinspect/scanner");
-		webInspectServiceImpl.retrieveScanFile("settings1", "TEST2");
+		webInspectServiceImpl.retrieveScanFile("settings1", "TEST6");
 	}
 
 }

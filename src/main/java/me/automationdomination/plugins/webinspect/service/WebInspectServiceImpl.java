@@ -14,6 +14,7 @@ import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -30,10 +31,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class WebInspectServiceImpl implements WebInspectService {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	private final HttpClient httpClient = HttpClientBuilder.create().build();
+	private final HttpClient httpClient;
 	private final String webInspectUrl;
 	
 	public WebInspectServiceImpl(final String webInspectUrl) {
+		this.httpClient = HttpClientBuilder.create()
+				.setDefaultRequestConfig(RequestConfig.custom()
+						.setSocketTimeout(900000)
+						.setConnectTimeout(900000)
+						.setConnectionRequestTimeout(900000).build()).build();
 		this.webInspectUrl = webInspectUrl;
 	}
 
@@ -127,7 +133,7 @@ public class WebInspectServiceImpl implements WebInspectService {
 		
 		try {
 			final HttpPost httpPost = new HttpPost(webInspectUrl);
-			httpPost.setEntity(new StringEntity("settingsName=" + settings + "&overrides=" + overridesString, Consts.UTF_8));
+			httpPost.setEntity(new StringEntity("settingsName=" + settings + "&overrides=" + overridesString, Consts.UTF_8));			
 			httpResponse = httpClient.execute(httpPost);
 		} catch (final ClientProtocolException e) {
 			throw new RuntimeException("ClientProtocolException while creating webinspect scan", e);
