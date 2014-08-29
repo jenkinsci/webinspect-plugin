@@ -1,6 +1,11 @@
-package me.automationdomination.plugins.webinspect.service;
+package me.automationdomination.plugins.webinspect.service.webinspect;
 
 import java.util.List;
+
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServer;
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServerImpl;
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectService;
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServiceImpl;
 
 import org.junit.Assert;
 

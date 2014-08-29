@@ -1,4 +1,4 @@
-package me.automationdomination.plugins.webinspect.service;
+package me.automationdomination.plugins.webinspect.service.webinspect;
 
 public interface WebInspectServer {
 	
