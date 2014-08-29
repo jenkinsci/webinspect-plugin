@@ -1,5 +1,6 @@
 package me.automationdomination.plugins.webinspect.service;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,4 +43,5 @@ public class FortifyClientService {
         projects = listProjectsProcessService.getProjects();
         return projects;
     }
+
 }

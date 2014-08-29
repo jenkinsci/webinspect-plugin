@@ -20,7 +20,7 @@ public class ListProjectsProcessService {
             while ( lineTokenizer.hasMoreTokens() ) {
                 String line = lineTokenizer.nextToken();
                 //pretty sure these are tabs on the return for listProjects
-                String[] values = line.split("\t+");
+                String[] values = line.split(",");
                 //we assume a length of three means we have a line with real projects listed
                 if ( values.length == 3 ) {
                     try {
