@@ -37,11 +37,16 @@ public class WebInspectServerImpl implements WebInspectServer {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	
 	public WebInspectServerImpl(final String webInspectServerUrl) {
+		this(webInspectServerUrl, 600000);
+	}
+	
+	public WebInspectServerImpl(final String webInspectServerUrl, final int socketTimeout) {
 		this.httpClient = HttpClientBuilder.create()
 				.setDefaultRequestConfig(RequestConfig.custom()
-						.setSocketTimeout(900000)
-						.setConnectTimeout(900000)
-						.setConnectionRequestTimeout(900000).build()).build();
+						.setSocketTimeout(socketTimeout)
+						.build())
+				.build();
+		
 		this.webInspectServerUrl = webInspectServerUrl;
 	}
 
