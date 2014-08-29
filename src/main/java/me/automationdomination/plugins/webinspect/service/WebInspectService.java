@@ -6,6 +6,6 @@ public interface WebInspectService {
 	
 	public List<String> retrieveSettings();
 	
-	public void retrieveScanFile(final String settings, final String scanName);
+	public void retrieveAndWriteScanFile(final String settings, final String scanName, final String outputPathName);
 
 }
