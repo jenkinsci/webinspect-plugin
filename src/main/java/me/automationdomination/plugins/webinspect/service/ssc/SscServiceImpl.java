@@ -10,9 +10,13 @@ import java.util.StringTokenizer;
  * Time: 10:18 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ListProjectsProcessService {
+public class SscServiceImpl implements SscService {
 
-        public HashMap<Long, String> getProjects() {
+        /* (non-Javadoc)
+		 * @see me.automationdomination.plugins.webinspect.service.ssc.SscService#getProjects()
+		 */
+        @Override
+		public HashMap<Long, String> getProjects() {
             HashMap<Long, String> projects = new HashMap<Long, String>();
 
             // TODO: we will need to put the gettr on the projects here for the StringTokenizer to add new line
