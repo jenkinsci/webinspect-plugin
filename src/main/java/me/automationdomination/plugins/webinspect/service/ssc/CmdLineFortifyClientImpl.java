@@ -13,7 +13,7 @@ import java.util.Map;
  * Time: 6:55 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SscServerImpl implements SscServer {
+public class CmdLineFortifyClientImpl implements SscServer {
 
     private String fortifyClient;
     private String sscUrl;
@@ -22,7 +22,7 @@ public class SscServerImpl implements SscServer {
     //private final FortifyWsClient fortifyWsClient = new FortifyWsClientImpl();
     // TODO: system command to fortifyclient
 
-        public SscServerImpl (String sscUrl, String sscToken, String fortifyClient) {
+        public CmdLineFortifyClientImpl (String sscUrl, String sscToken, String fortifyClient) {
             this.sscUrl = sscUrl;
             this.sscToken = sscToken;
             this.fortifyClient = fortifyClient;
