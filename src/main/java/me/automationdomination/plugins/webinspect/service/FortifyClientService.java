@@ -1,5 +1,6 @@
 package me.automationdomination.plugins.webinspect.service;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,4 +43,14 @@ public class FortifyClientService {
         projects = listProjectsProcessService.getProjects();
         return projects;
     }
+
+    // added for fpr
+    public static void validateFortifyFPRPath(String fortifyFPRPath) throws IOException {
+        File fortifyFPR = new File(fortifyFPRPath);
+        if ( ! fortifyFPR.exists() ) {
+            throw new IOException("That is not a valid Fortify FPR path");
+        }
+
+    }
+
 }
