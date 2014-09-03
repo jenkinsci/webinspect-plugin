@@ -1,6 +1,8 @@
 package me.automationdomination.plugins.webinspect.service;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
