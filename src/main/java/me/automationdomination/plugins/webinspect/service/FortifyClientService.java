@@ -44,4 +44,13 @@ public class FortifyClientService {
         return projects;
     }
 
+    // added for fpr
+    public static void validateFortifyFPRPath(String fortifyFPRPath) throws IOException {
+        File fortifyFPR = new File(fortifyFPRPath);
+        if ( ! fortifyFPR.exists() ) {
+            throw new IOException("That is not a valid Fortify FPR path");
+        }
+
+    }
+
 }
