@@ -4,7 +4,6 @@ package me.automationdomination.plugins.webinspect.service.ssc;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +28,7 @@ public class CmdLineFortifyClientImpl implements SscServer {
         }
         public static void validateFortifyConnection(String sscUrl, String sscToken, String fortifyClient) {
             String[] command = {fortifyClient, "listProjectVersions", "-machineoutput", "-authtoken", sscToken, "-url", sscUrl};
-            SscService listProjectsProcessService = new SscServiceImpl ();
+            //SscService listProjectsProcessService = new SscServiceImpl ();
             //ExternalProcess process = new ExternalProcess(command , listProjectsProcessService );
             //process.execute();
             //listProjectsProcessService.throwSpecificExceptions();
@@ -40,14 +39,15 @@ public class CmdLineFortifyClientImpl implements SscServer {
 	 * @see me.automationdomination.plugins.webinspect.service.ssc.SscServer#getProjects()
 	 */
     @Override
-	public Map<Long, String> getProjects() {
+	public String retrieveProjects() {
         HashMap<Long, String> projects;
         String[] command = {fortifyClient, "listProjectVersions", "-machineoutput", "-authtoken", sscToken, "-url", sscUrl};
-        SscService listProjectsProcessService = new SscServiceImpl();
+        //SscService listProjectsProcessService = new SscServiceImpl();
         //ExternalProcess process = new ExternalProcess(command , listProjectsProcessService );
         //process.execute();
-        projects = listProjectsProcessService.getProjects();
-        return projects;
+        //projects = listProjectsProcessService.getProjects();
+        //return projects;
+        return null;
     }
 
     // added for fpr
