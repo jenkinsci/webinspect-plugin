@@ -1,24 +1,40 @@
 package me.automationdomination.plugins.webinspect;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import me.automationdomination.plugins.webinspect.validation.*;
+
+import java.io.PrintStream;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import me.automationdomination.plugins.webinspect.service.ssc.CmdLineFortifyClientImpl;
+import me.automationdomination.plugins.webinspect.service.ssc.SscServer;
+import me.automationdomination.plugins.webinspect.service.ssc.SscService;
+import me.automationdomination.plugins.webinspect.service.ssc.SscServiceImpl;
+import me.automationdomination.plugins.webinspect.validation.ApacheCommonsUrlValidator;
+import me.automationdomination.plugins.webinspect.validation.ApiKeyStringValidator;
+import me.automationdomination.plugins.webinspect.validation.ConfigurationValueValidator;
+import me.automationdomination.plugins.webinspect.validation.FileValidator;
+import me.automationdomination.plugins.webinspect.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.PrintStream;
+
 
 public class WebInspectPublisher extends Recorder {
+	
+	private static final Logger logger = Logger.getLogger(WebInspectPublisher.class.getName());
 
 	private final String fprScanFile;
 	private final String settingsFile;
@@ -79,104 +95,183 @@ public class WebInspectPublisher extends Recorder {
      * for the actual HTML fragment for the configuration screen.
      */
     @Extension // This indicates to Jenkins that this is an implementation of an extension point.
-    public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+	public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
-        private static final String DISPLAY_NAME = "Publish WebInspect Scan";
+		private static final String DISPLAY_NAME = "Publish WebInspect Scan";
 
-        private static final String FORTIFY_CLIENT_PARAMETER = "fortifyClient";
-        private static final String SSC_URL_PARAMETER = "sscUrl";
-        private static final String TOKEN_PARAMETER = "sscToken";
-        private static final String WEB_INSPECT_URL_PARAMETER = "webInspectUrl";
+		private static final String FORTIFY_CLIENT_PARAMETER = "fortifyClient";
+		private static final String SSC_URL_PARAMETER = "sscUrl";
+		private static final String SSC_TOKEN_PARAMETER = "sscToken";
+		private static final String WEB_INSPECT_URL_PARAMETER = "webInspectUrl";
 
-        /**
-         * To persist global configuration information,
-         * simply store it in a field and call save().
-         *
-         * <p>
-         * If you don't want fields to be persisted, use <tt>transient</tt>.
-         */
-        private String fortifyClient;
-        private String sscUrl;
-        private String sscToken;
-        private String webInspectUrl;
-        
 		private final ConfigurationValueValidator fileValidator = new FileValidator();
 		private final ConfigurationValueValidator simpleStringValidator = new SimpleStringValidator();
 		private final ConfigurationValueValidator apiKeyStringValidator = new ApiKeyStringValidator();
 		private final ConfigurationValueValidator urlValidator = new ApacheCommonsUrlValidator();
 
-        /**
-         * In order to load the persisted global configuration, you have to 
-         * call load() in the constructor.
-         */
-        public DescriptorImpl() {
-            load();
-        }
-        
-		public FormValidation doCheckFortifyClient(@QueryParameter final String pathName) {
-			if (!fileValidator.isValid(pathName))
-				return FormValidation.error("Location of the fortifyclient path \"" + pathName + "\" is invalid");
+		private String fortifyClient;
+		private String sscUrl;
+		private String sscToken;
+		private String webInspectUrl;
+
+		public DescriptorImpl() {
+			load();
+			logger.info("LOAD");
+			logger.info(sscUrl);
+			logger.info(sscToken);
+			logger.info(webInspectUrl);
+			logger.info(fortifyClient);
+		}
+
+		public FormValidation doCheckFortifyClient(@QueryParameter final String fortifyClient) {
+			logger.finest("validating fortifyclient");
+
+			if (!fortifyClientIsValid(fortifyClient)) {
+				return FormValidation.error("Location of the fortifyclient path \"" + fortifyClient + "\" is invalid");
+			}
 
 			return FormValidation.ok();
 		}
-        
-        public FormValidation doCheckSscUrl(@QueryParameter final String sscUrl) {
-        	if (!urlValidator.isValid(sscUrl))
-        		return FormValidation.error("SSC Fortify URL \"" + sscUrl + "\" is invalid");
 
-        	return FormValidation.ok();
-        }
-        
-        public FormValidation doCheckToken(@QueryParameter final String sscToken) {
-        	if (!(simpleStringValidator.isValid(sscToken) && apiKeyStringValidator.isValid(sscToken)))
-        		return FormValidation.error("SSC Fortify token \"" + sscToken + "\" is invalid");
+		public FormValidation doCheckSscUrl(@QueryParameter final String sscUrl) {
+			logger.finest("validating ssc url");
 
-        	return FormValidation.ok();
-        }
-        
-		public FormValidation doCheckWebInspectUrl(@QueryParameter final String url) {
-        	if (!urlValidator.isValid(url)) 
-        		return FormValidation.error("WebInspect REST API URL \"" + url + "\" is invalid");
+			if (!sscUrlIsValid(sscUrl)) {
+				return FormValidation.error("SSC Fortify URL \"" + sscUrl + "\" is invalid");
+			}
 
-        	return FormValidation.ok();
+			return FormValidation.ok();
 		}
+		
+		public FormValidation doCheckSscToken(@QueryParameter final String sscToken) {
+			logger.finest("validating ssc token");
+			
+			if (!sscTokenIsValid(sscToken)) {
+				return FormValidation.error("SSC Fortify token \"" + sscToken + "\" is invalid");
+			}
 
+			return FormValidation.ok();
+		}
+		
+		public FormValidation doCheckWebInspectUrl(@QueryParameter final String webInspectUrl) {
+			logger.finest("validating webinspect url");
+			
+			if (!webInspectUrlIsValid(webInspectUrl)) {
+				return FormValidation.error("WebInspect REST API URL \"" + webInspectUrl + "\" is invalid");
+			}
+
+			return FormValidation.ok();
+		}
+		
 		public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
-			// Indicates that this builder can be used with all kinds of project
-			// types
+			// Indicates that this builder can be used with all kinds of project types
 			return true;
 		}
 		
-        @Override
-        public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
-        	// TODO: validate all these parameters
-        	fortifyClient = formData.getString(FORTIFY_CLIENT_PARAMETER);
-        	
-        	if (!fileValidator.isValid(fortifyClient))
-				throw new FormException("Location of the fortifyclient path \"" + fortifyClient + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
-        	
-        	
-        	sscUrl = formData.getString(SSC_URL_PARAMETER);
+		@Override
+		public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
+			logger.finest("saving fortifyclient");
+			
+			final String fortifyClientPathNameParameter = formData.getString(FORTIFY_CLIENT_PARAMETER);
+ 
+			if (!fortifyClientIsValid(fortifyClientPathNameParameter)) {
+				throw new FormException("Location of the fortifyclient path \"" + fortifyClientPathNameParameter + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
+			} else {
+				fortifyClient = fortifyClientPathNameParameter;
+				
+				logger.finest("saved fortifyclient value <" + fortifyClient + ">");
+			}
 
-        	if (!urlValidator.isValid(sscUrl)) 
-        		throw new FormException("SSC URL \"" + sscUrl + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
+			
+			
+			logger.finest("saving ssc url");
+			
+			final String sscUrlParameter = formData.getString(SSC_URL_PARAMETER);
+
+			if (!sscUrlIsValid(sscUrlParameter)) {
+				throw new FormException("SSC URL \"" + sscUrlParameter + "\" is invalid", FORTIFY_CLIENT_PARAMETER);
+			} else {
+				sscUrl = sscUrlParameter;
+				
+				logger.finest("saved ssc url value <" + sscUrl + ">");
+			}
+
+			
+			
+			logger.finest("saving ssc token");
+			
+			final String sscTokenParameter = formData.getString(SSC_TOKEN_PARAMETER);
+
+			if (!sscTokenIsValid(sscTokenParameter)) {
+				throw new FormException("SSC Fortify Token \"" + sscTokenParameter + "\" is invalid", SSC_TOKEN_PARAMETER);
+			} else {
+				sscToken = sscTokenParameter;
+				
+				logger.finest("saved ssc token value <" + sscToken + ">");
+			}
+
+			
+			
+			logger.finest("saving webinspect url");
+			
+			final String webInspectUrlParameter = formData.getString(WEB_INSPECT_URL_PARAMETER);
+
+			if (!webInspectUrlIsValid(webInspectUrlParameter)) {
+				throw new FormException("WebInspect REST API URL \"" + webInspectUrlParameter + "\" is invalid", WEB_INSPECT_URL_PARAMETER);
+			} else {
+				webInspectUrl = webInspectUrlParameter;
+				
+				logger.finest("saved webinspect url value <" + webInspectUrl + ">");
+			}
+
+			
+			
+			save();
+			
+			logger.finest("configuration complete");
+			
+			boolean ass = super.configure(staplerRequest, formData);
+			
+			logger.info("SAVE");
+			logger.info(sscUrl);
+			logger.info(sscToken);
+			logger.info(webInspectUrl);
+			logger.info(fortifyClient);
+			return ass;
+		}
+		
+		private boolean fortifyClientIsValid(final String fortifyClientPathName) {
+			final boolean valid = fileValidator.isValid(fortifyClientPathName);
+			
+			logger.finest("fortifyclient parameter <" + fortifyClientPathName + "> is <" + (valid ? "VALID" : "INVALID") + ">");
+			
+			return valid;
+		}
+        
+        private boolean sscUrlIsValid(final String sscUrl) {
+        	final boolean valid = urlValidator.isValid(sscUrl);
         	
+        	logger.finest("ssc url parameter <" + sscUrl + "> is <" + (valid ? "VALID" : "INVALID") + ">");
         	
-        	sscToken = formData.getString(TOKEN_PARAMETER);
-        	
-        	if (!(simpleStringValidator.isValid(sscToken) && apiKeyStringValidator.isValid(sscToken)))
-        		throw new FormException("SSC Fortify Token \"" + sscToken + "\" is invalid", TOKEN_PARAMETER);
-        	
-        	
-        	webInspectUrl = formData.getString(WEB_INSPECT_URL_PARAMETER);
-        	
-        	if (!urlValidator.isValid(webInspectUrl)) 
-        		throw new FormException("WebInspect REST API URL \"" + webInspectUrl + "\" is invalid", WEB_INSPECT_URL_PARAMETER);
-            
-        	
-            save();
-            return super.configure(staplerRequest,formData);
+        	return valid;
         }
+        
+        private boolean sscTokenIsValid(final String sscToken) {
+        	final boolean valid = simpleStringValidator.isValid(sscToken) && apiKeyStringValidator.isValid(sscToken);
+        	
+        	logger.finest("ssc token parameter <" + sscToken + "> is <" + (valid ? "VALID" : "INVALID") + ">");
+        	
+        	return valid;
+        }
+        
+        private boolean webInspectUrlIsValid(final String webInspectUrl) {
+        	final boolean valid = urlValidator.isValid(webInspectUrl);
+        	
+        	logger.finest("webinspect url parameter <" + webInspectUrl + "> is <" + (valid ? "VALID" : "INVALID") + ">");
+        	
+        	return valid;
+        }
+        
         //WebInspect Settings
         public ListBoxModel doFillSettingsFileItems() {
         	final ListBoxModel settingsFileItems = new ListBoxModel();
@@ -190,27 +285,36 @@ public class WebInspectPublisher extends Recorder {
         	return settingsFileItems;
         }
 
-        public ListBoxModel doFillProjectVersionIdItems() {
-        	final ListBoxModel projectVersionIdItems = new ListBoxModel();
-            /**
+		public ListBoxModel doFillProjectVersionItems() {
+			logger.finest("populating project versions");
+			
+			final ListBoxModel projectVersionItems = new ListBoxModel();
+			
+			final SscServer sscServer = new CmdLineFortifyClientImpl(fortifyClient, sscUrl, sscToken);
+			final SscService sscService = new SscServiceImpl(sscServer);
+			
 
-            //TODO: Need to add FortifyClientService to build list of projectVersionIdItems
+			
+			final Map<Integer, String> projects;
 
-            return projectVersionIdItems;
-             */
-        	projectVersionIdItems.add("WebGoat-snapshot", "1");
-        	projectVersionIdItems.add("WebGoat-release", "2");
+			try {
+				projects = sscService.retrieveProjects();
+			} catch (final Exception e) {
+				logger.warning("exception retrieving projects form ssc server");
+				projectVersionItems.add("ERROR RETRIEVING PROJECTS FROM SSC SERVER", "69");
+				return projectVersionItems;
+			}
 
+			for (final Integer projectId : projects.keySet()) {
+				projectVersionItems.add(projects.get(projectId), projectId.toString());
+			}
 
-        	return projectVersionIdItems;
-    }
+			return projectVersionItems;
+		}
 
-        /**
-         * This human readable name is used in the configuration screen.
-         */
-        public String getDisplayName() {
-            return DISPLAY_NAME;
-        }
+		public String getDisplayName() {
+			return DISPLAY_NAME;
+		}
 
 		public String getFortifyClient() {
 			return fortifyClient;
@@ -220,15 +324,15 @@ public class WebInspectPublisher extends Recorder {
 			return sscUrl;
 		}
 
-		public String getToken() {
+		public String getSscToken() {
 			return sscToken;
 		}
 
-        public String getWebInspectUrl() {
+		public String getWebInspectUrl() {
 			return webInspectUrl;
 		}
 
+	}
 
-    }
 }
 

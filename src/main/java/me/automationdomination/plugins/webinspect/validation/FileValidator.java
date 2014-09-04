@@ -6,13 +6,15 @@ public class FileValidator implements ConfigurationValueValidator {
 
 	@Override
 	public boolean isValid(final String value) {
-		if (value == null || value.isEmpty())
+		if (value == null || value.isEmpty()) {
 			return false;
+		}
 		
 		final File file = new File(value);
 		
-		if (!file.exists())
+		if (!file.exists()) {
 			return false;
+		}
 		
 		return true;
 	}
