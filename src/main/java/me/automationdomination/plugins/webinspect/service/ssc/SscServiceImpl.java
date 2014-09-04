@@ -64,7 +64,10 @@ public class SscServiceImpl implements SscService {
 		return projects;
 	}
 
-    public String uploadFpr() {
+	@Override
+    public String uploadScanFile(final String scanFilePathName) {
+		logger.info("uploading scan file path name");
+		
         /*
         logger.fine("uploading FPR!");
         final Integer projectID = Integer.parseInt(values[PROJECT_ID_INDEX]);

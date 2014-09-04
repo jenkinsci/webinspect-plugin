@@ -25,7 +25,7 @@ public class WebInspectServiceImpl implements WebInspectService {
 	}
 
 	@Override
-	public List<String> retrieveSettings() {
+	public List<String> retrieveSettingsFiles() {
 		logger.info("retrieving settings");
 		
 		final String settingsJson = webInspectServer.retrieveSettingsJson();
@@ -52,6 +52,8 @@ public class WebInspectServiceImpl implements WebInspectService {
 		final String scanIdJson = webInspectServer.createWebInspectScan(settings, scanName);
 		
 		final String scanId = extractScanId(scanIdJson);
+		
+		logger.info("using scan id <" + scanId + ">");
 		
 		webInspectServer.waitForStatusChangeComplete(scanId);
 		

@@ -11,7 +11,6 @@ import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -45,14 +44,12 @@ public class WebInspectPublisher extends Recorder {
 	private final String settingsFile;
 	private final String projectVersionId;
 
-	// Fields in config.jelly must match the parameter names in the
-	// "DataBoundConstructor"
 	@DataBoundConstructor
 	public WebInspectPublisher(
-			final String fprFile, 
+			final String fprScanFile, 
 			final String settingsFile,
 			final String projectVersionId) {
-		this.fprScanFile = fprFile;
+		this.fprScanFile = fprScanFile;
 		this.settingsFile = settingsFile;
 		this.projectVersionId = projectVersionId;
 	}
@@ -62,9 +59,25 @@ public class WebInspectPublisher extends Recorder {
     		final AbstractBuild<?, ?> build, 
     		final Launcher launcher, 
     		final BuildListener listener) {
-        final PrintStream log = launcher.getListener().getLogger();
+        logger.info("using fpr scan file <" + fprScanFile + ">");
+        logger.info("using settings file <" + settingsFile + ">");
+        logger.info("using project version id <" + projectVersionId + ">");
         
-        log.println("hello, world!");
+        final String webInspectUrl = this.getDescriptor().getWebInspectUrl();
+        final String fortifyClient = this.getDescriptor().getFortifyClient();
+        final String sscUrl = this.getDescriptor().getSscUrl();
+        final String sscToken = this.getDescriptor().getSscToken();
+        
+        final SscServer sscServer = new CmdLineFortifyClientImpl(fortifyClient, sscUrl, sscToken);
+        final SscService sscService = new SscServiceImpl(sscServer);
+        
+        final WebInspectServer webInspectServer = new WebInspectServerImpl(webInspectUrl);
+        final WebInspectService webInspectService = new WebInspectServiceImpl(webInspectServer);
+        
+        
+        webInspectService.retrieveAndWriteScanFile(settingsFile, "TESTETESTE69", "/tmp/teste69.fpr");
+        
+        sscService.uploadScanFile("/tmp/teste69.fpr");
         
         return true;
     }
@@ -78,20 +91,23 @@ public class WebInspectPublisher extends Recorder {
     public BuildStepMonitor getRequiredMonitorService() {
 		return BuildStepMonitor.NONE; // NONE since this is not dependent on the last step
     }
-    
-    public String getFprFile() {
-        return fprScanFile;
-    }
 
-    public String getSettingsFile() {
-        return settingsFile;
-    }
+    public String getFprScanFile() {
+		return fprScanFile;
+	}
 
-    public String getProjectVersionId() {
-        return projectVersionId;
-    }
+	public String getSettingsFile() {
+		return settingsFile;
+	}
 
-    /**
+	public String getProjectVersionId() {
+		return projectVersionId;
+	}
+
+
+
+	
+	/**
      * Descriptor for {@link WebInspectPublisher}. Used as a singleton.
      * The class is marked as public so that it can be accessed from views.
      *
@@ -275,24 +291,24 @@ public class WebInspectPublisher extends Recorder {
         	
         	
         	
-        	final List<String> settingFiles;
+        	final List<String> settingsFiles;
         	
         	try {
-        		settingFiles = webInspectService.retrieveSettings();
+        		settingsFiles = webInspectService.retrieveSettingsFiles();
         	} catch (final Exception e) {
         		logger.warning("exception retrieving settings from webinspect server");
         		settingsFileItems.add("ERROR RETRIEVING SETTINGS FROM WEBINSPECT SERVER", "69");
         		return settingsFileItems;
         	}
         	
-        	for (int i = 0; i < settingFiles.size(); i++) {
-        		settingsFileItems.add(settingFiles.get(i), Integer.toString(i));
+        	for (final String settingsFile : settingsFiles) {
+        		settingsFileItems.add(settingsFile, settingsFile);
         	}
-        	
+
         	return settingsFileItems;
         }
 
-		public ListBoxModel doFillProjectVersionItems() {
+		public ListBoxModel doFillProjectVersionIdItems() {
 			logger.finest("populating project versions");
 			
 			final ListBoxModel projectVersionItems = new ListBoxModel();

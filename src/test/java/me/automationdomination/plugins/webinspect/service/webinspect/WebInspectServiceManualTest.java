@@ -15,7 +15,7 @@ public class WebInspectServiceManualTest {
 	public void retrieveSettingsTest() {
 		final WebInspectServer webInspectServer = new WebInspectServerImpl("http://192.168.56.101:8083/webinspect/scanner");
 		final WebInspectService webInspectService = new WebInspectServiceImpl(webInspectServer);
-		final List<String> settings = webInspectService.retrieveSettings();
+		final List<String> settings = webInspectService.retrieveSettingsFiles();
 		Assert.assertEquals(3, settings.size());
 		Assert.assertTrue(settings.contains("Default"));
 		Assert.assertTrue(settings.contains("settings1"));

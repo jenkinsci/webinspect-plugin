@@ -6,6 +6,6 @@ public interface SscService {
 
 	public Map<Integer, String> retrieveProjects();
 
-    public String uploadFpr();
+    public String uploadScanFile(String scanFilePathName);
 
 }
