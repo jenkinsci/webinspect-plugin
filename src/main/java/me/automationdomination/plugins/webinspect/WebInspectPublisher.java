@@ -12,6 +12,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -19,6 +20,10 @@ import me.automationdomination.plugins.webinspect.service.ssc.CmdLineFortifyClie
 import me.automationdomination.plugins.webinspect.service.ssc.SscServer;
 import me.automationdomination.plugins.webinspect.service.ssc.SscService;
 import me.automationdomination.plugins.webinspect.service.ssc.SscServiceImpl;
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServer;
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServerImpl;
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectService;
+import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServiceImpl;
 import me.automationdomination.plugins.webinspect.validation.ApacheCommonsUrlValidator;
 import me.automationdomination.plugins.webinspect.validation.ApiKeyStringValidator;
 import me.automationdomination.plugins.webinspect.validation.ConfigurationValueValidator;
@@ -259,16 +264,30 @@ public class WebInspectPublisher extends Recorder {
         	
         	return valid;
         }
-        
-        //WebInspect Settings
+
         public ListBoxModel doFillSettingsFileItems() {
+        	logger.finest("populating settings files");
+        	
         	final ListBoxModel settingsFileItems = new ListBoxModel();
-
-
-        	settingsFileItems.add("default", "1");
-        	settingsFileItems.add("AutomationDomination", "2");
-        	settingsFileItems.add("WebGoat", "3");
-        	settingsFileItems.add("Commerce-4j", "4");
+        	
+        	final WebInspectServer webInspectServer = new WebInspectServerImpl(webInspectUrl);
+        	final WebInspectService webInspectService = new WebInspectServiceImpl(webInspectServer);
+        	
+        	
+        	
+        	final List<String> settingFiles;
+        	
+        	try {
+        		settingFiles = webInspectService.retrieveSettings();
+        	} catch (final Exception e) {
+        		logger.warning("exception retrieving settings from webinspect server");
+        		settingsFileItems.add("ERROR RETRIEVING SETTINGS FROM WEBINSPECT SERVER", "69");
+        		return settingsFileItems;
+        	}
+        	
+        	for (int i = 0; i < settingFiles.size(); i++) {
+        		settingsFileItems.add(settingFiles.get(i), Integer.toString(i));
+        	}
         	
         	return settingsFileItems;
         }
