@@ -1,18 +1,10 @@
 package me.automationdomination.plugins.webinspect.service.webinspect;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.http.Consts;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -23,9 +15,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class WebInspectServerImpl implements WebInspectServer {
 	
@@ -170,15 +165,16 @@ public class WebInspectServerImpl implements WebInspectServer {
 
 	@Override
 	public void waitForStatusChangeComplete(final String scanId) {
-		logger.info("waiting for scan id <" + scanId + "> status to complete");
+		logger.info("waiting for scan id <" + scanId + "> with waitforstatuschange");
 		
 		final URIBuilder uriBuilder;
-		
+		// Changed to http://192.168.1.4:8083/webinspect/scanner/123-1234-12123-12324?action=waitforstatuschange
+        // from http://192.168.1.4:8083/webinspect/scanner/123-1234-12123-12324?WaitForStatusChange=Complete
 		try {
 			uriBuilder = new URIBuilder(webInspectServerUrl + "/" + scanId)
-				.setParameter("WaitForStatusChange", "Complete");
+				.setParameter("action", "waitforstatuschange");
 		} catch (final URISyntaxException e) {
-			throw new RuntimeException("URISyntaxException while waiting for scan <" + scanId + "> completion", e);
+			throw new RuntimeException("URISyntaxException while waiting for waitforstatuschange on <" + scanId + ">", e);
 		}
 		
 		// TODO: check the return code here
