@@ -116,11 +116,6 @@ public class WebInspectPublisher extends Recorder {
 
 		public DescriptorImpl() {
 			load();
-			logger.info("LOAD");
-			logger.info(sscUrl);
-			logger.info(sscToken);
-			logger.info(webInspectUrl);
-			logger.info(fortifyClient);
 		}
 
 		public FormValidation doCheckFortifyClient(@QueryParameter final String fortifyClient) {
@@ -230,14 +225,7 @@ public class WebInspectPublisher extends Recorder {
 			
 			logger.finest("configuration complete");
 			
-			boolean ass = super.configure(staplerRequest, formData);
-			
-			logger.info("SAVE");
-			logger.info(sscUrl);
-			logger.info(sscToken);
-			logger.info(webInspectUrl);
-			logger.info(fortifyClient);
-			return ass;
+			return super.configure(staplerRequest, formData);
 		}
 		
 		private boolean fortifyClientIsValid(final String fortifyClientPathName) {

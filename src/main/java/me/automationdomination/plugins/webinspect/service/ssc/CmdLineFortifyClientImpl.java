@@ -17,17 +17,14 @@ public class CmdLineFortifyClientImpl implements SscServer {
 	private String fortifyClient;
 	private String sscUrl;
 	private String sscToken;
-    private String fprPath;
 
 	public CmdLineFortifyClientImpl(
 			final String fortifyClient, 
 			final String sscUrl,
-			final String sscToken,
-            final String fprPath) {
+			final String sscToken) {
 		this.fortifyClient = fortifyClient;
 		this.sscUrl = sscUrl;
 		this.sscToken = sscToken;
-        this.fprPath = fprPath;
 	}
 
 	@Override
@@ -44,27 +41,40 @@ public class CmdLineFortifyClientImpl implements SscServer {
 			throw new RuntimeException("IOException running fortifyclient command to retrieve projects", e);
 		}
 		
-		// read the output
-		final BufferedReader fortifyClientProcessOutputReader = new BufferedReader(
-				new InputStreamReader(fortifyClientProcess.getInputStream()));
-		
-		
-		final StringBuilder projectsStringBuilder = new StringBuilder();
-		
-		// print output
-		String line;
+		final int exitValue;
 		
 		try {
-			while ((line = fortifyClientProcessOutputReader.readLine()) != null) {
-				projectsStringBuilder.append(line);
-				projectsStringBuilder.append("\n");
-			}
-		} catch (final IOException e) {
-			logger.warning("IOException reading output of fortifyclient command to retrieve projects");
-			throw new RuntimeException("IOException reading output of fortifyclient command to retrieve projects", e);
+			exitValue = fortifyClientProcess.waitFor();
+		} catch (final InterruptedException e) {
+			logger.warning("InterruptedException running fortifyclient command to retrieve projects");
+			throw new RuntimeException("InterruptedException running fortifyclient command to retrieve projects", e);
 		}
 		
-		return projectsStringBuilder.toString();
+		if (exitValue == 0) {
+			// read the output
+			final BufferedReader fortifyClientProcessOutputReader = new BufferedReader(
+					new InputStreamReader(fortifyClientProcess.getInputStream()));
+			
+			
+			final StringBuilder projectsStringBuilder = new StringBuilder();
+			
+			// print output
+			String line;
+			
+			try {
+				while ((line = fortifyClientProcessOutputReader.readLine()) != null) {
+					projectsStringBuilder.append(line);
+					projectsStringBuilder.append("\n");
+				}
+			} catch (final IOException e) {
+				logger.warning("IOException reading output of fortifyclient command to retrieve projects");
+				throw new RuntimeException("IOException reading output of fortifyclient command to retrieve projects", e);
+			}
+			
+			return projectsStringBuilder.toString();
+		} else {
+			throw new RuntimeException("ssc service not available");
+		}
 	}
 
     public void uploadFpr(File fprFile, String projectID) {
