@@ -64,4 +64,32 @@ public class SscServiceImpl implements SscService {
 		return projects;
 	}
 
+    public String uploadFpr() {
+        /*
+        logger.fine("uploading FPR!");
+        final Integer projectID = Integer.parseInt(values[PROJECT_ID_INDEX]);
+        final String sscUrl
+
+        private File getFPRFile(String fortifyFPRPath) {
+            File myDir = new File(taskContext.getWorkingDirectory(), fortifyFPRPath);
+            if (! myDir.exists()) {
+                throw new InvalidFortifyFPRPathException("No FPR directory was found in " + myDir);
+            }
+            FilenameFilter select = new FPRFileListFilter();
+            File[] contents = myDir.listFiles(select);
+
+            // There should be no reason for more than one FPR to exist in a build so
+            // we will just assume the first (and hopefully only) FPR is the correct one
+            if ( contents != null && contents.length >= 1 )
+                return contents[0];
+            else
+                throw new FPRNotFoundException("No FPR file was found in " + myDir);
+        }
+
+
+    }
+     return fpr;
+     */
+        return null;
+    }
 }
