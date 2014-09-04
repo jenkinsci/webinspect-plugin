@@ -5,7 +5,7 @@
   <f:entry title="WebInspect Scan Settings" description="WebInspect settings file associated with your scan" field="settingsFile">
     <f:select />
   </f:entry>
-  <f:entry title="Fortify SSC Project / Version" description="The Project and Version on the SSC server to upload the WebInspect scan results in .fpr format." field="projectVersionId">
+  <f:entry title="Fortify SSC Project / Version" description="The Project and Version on the SSC server to upload the WebInspect scan results in .fpr format." field="projectVersion">
     <f:select />
   </f:entry>
 </j:jelly>
