@@ -1,6 +1,6 @@
 ### Note ###
-- This plugin is not maintained by *Hewlett Packard (HP)*
-- Plugin version 1.0 supports HP WebInspect versions 10.20 and later.
+- This plugin is not maintained by *Hewlett-Packard, Inc. (HP)*
+- Plugin version 1.0 supports HP WebInspect 10.20 versions and later.
 
 ### Features ###
 - Upload any supported scan file(s) from your Jenkins Slave/Master to your Fortify Software Security Center (SSC) web server using your WebInspect API deployment.
