@@ -77,8 +77,8 @@ public class CmdLineFortifyClientImpl implements SscServer {
 		}
 	}
 
-    public void uploadFpr(File fprFile, String projectID) {
-        String[] command = {fortifyClient, "uploadFPR", "-machineoutput", "-file", fprFile.getAbsolutePath(), "-projectVersionID", projectID,
+    public void uploadFpr(File fprScanFile, String projectID) {
+        String[] command = {fortifyClient, "uploadFPR", "-machineoutput", "-file", fprScanFile.getAbsolutePath(), "-projectVersionID", projectID,
                 "-authtoken", sscToken, "-url", sscUrl};
 
         // run the command
@@ -93,7 +93,7 @@ public class CmdLineFortifyClientImpl implements SscServer {
         /*
         try {
             FortifyClientProcessFprUploader fortifyClientProcessFprUploader = new fortifyClientProcessFprUploader(sscUrl, sscToken, fortifyClient, fprFilePath);
-            File fprFile = uploadFprFile(fprFilePath);
+            File fprScanFile = uploadFprFile(fprFilePath);
             logger.info("FPR upload begin: Uploading " + fprFile + "" + " to " + sscUrl + " for project id " + projectID );
             fortifyCli
             //(fprFile, projectID);
@@ -114,11 +114,6 @@ public class CmdLineFortifyClientImpl implements SscServer {
 			String sscToken, String fortifyClient) {
 		String[] command = { fortifyClient, "listProjectVersions",
 				"-machineoutput", "-authtoken", sscToken, "-url", sscUrl };
-		// SscService listProjectsProcessService = new SscServiceImpl ();
-		// ExternalProcess process = new ExternalProcess(command ,
-		// listProjectsProcessService );
-		// process.execute();
-		// listProjectsProcessService.throwSpecificExceptions();
 		return;
 	}
 
