@@ -1,20 +1,16 @@
 package me.automationdomination.plugins.webinspect;
+
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
 import me.automationdomination.plugins.webinspect.service.ssc.CmdLineFortifyClientImpl;
 import me.automationdomination.plugins.webinspect.service.ssc.SscServer;
 import me.automationdomination.plugins.webinspect.service.ssc.SscService;
@@ -23,16 +19,17 @@ import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectS
 import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServerImpl;
 import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectService;
 import me.automationdomination.plugins.webinspect.service.webinspect.WebInspectServiceImpl;
-import me.automationdomination.plugins.webinspect.validation.ApacheCommonsUrlValidator;
-import me.automationdomination.plugins.webinspect.validation.ApiKeyStringValidator;
-import me.automationdomination.plugins.webinspect.validation.ConfigurationValueValidator;
-import me.automationdomination.plugins.webinspect.validation.FileValidator;
-import me.automationdomination.plugins.webinspect.validation.SimpleStringValidator;
+import me.automationdomination.plugins.webinspect.validation.*;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 
 
@@ -75,9 +72,11 @@ public class WebInspectPublisher extends Recorder {
         final WebInspectService webInspectService = new WebInspectServiceImpl(webInspectServer);
         
         
-        webInspectService.retrieveAndWriteScanFile(settingsFile, "TESTETESTE69", "/tmp/teste69.fpr");
+        //webInspectService.retrieveAndWriteScanFile(settingsFile, "TESTETESTE69", "/tmp/teste69.fpr");
+        webInspectService.retrieveAndWriteScanFile(settingsFile, fprScanFile, fprScanFile);
         
-        sscService.uploadScanFile("/tmp/teste69.fpr");
+        //sscService.uploadScanFile("/tmp/teste69.fpr");
+        sscService.uploadScanFile(fprScanFile);
         
         return true;
     }
@@ -178,8 +177,21 @@ public class WebInspectPublisher extends Recorder {
 
 			return FormValidation.ok();
 		}
-		
-		public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
+
+        public FormValidation doTestConnection(@QueryParameter final String webInspectUrl) throws IOException, ServletException {
+            final WebInspectServer webInspectServer = new WebInspectServerImpl(webInspectUrl) {
+            };
+            final WebInspectService webInspectService = new WebInspectServiceImpl(webInspectServer);
+            final List<String> settings = webInspectService.retrieveSettingsFiles();
+
+            if (!settings.isEmpty()) {
+                return FormValidation.ok("WebInspect connection success!");
+            } else {
+                return FormValidation.error("Unable to connect to WebInspect");
+            }
+        }
+
+        public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
 			// Indicates that this builder can be used with all kinds of project types
 			return true;
 		}
@@ -297,7 +309,7 @@ public class WebInspectPublisher extends Recorder {
         		settingsFiles = webInspectService.retrieveSettingsFiles();
         	} catch (final Exception e) {
         		logger.warning("exception retrieving settings from webinspect server");
-        		settingsFileItems.add("ERROR RETRIEVING SETTINGS FROM WEBINSPECT SERVER", "69");
+        		settingsFileItems.add("ERROR RETRIEVING SETTINGS FROM WEBINSPECT", "Validating WebInspect Settings");
         		return settingsFileItems;
         	}
         	
@@ -324,7 +336,7 @@ public class WebInspectPublisher extends Recorder {
 				projects = sscService.retrieveProjects();
 			} catch (final Exception e) {
 				logger.warning("exception retrieving projects form ssc server");
-				projectVersionItems.add("ERROR RETRIEVING PROJECTS FROM SSC SERVER", "69");
+				projectVersionItems.add("ERROR RETRIEVING PROJECT VERSIONS FROM SSC SERVER", "Validating SSC Project Versions");
 				return projectVersionItems;
 			}
 
