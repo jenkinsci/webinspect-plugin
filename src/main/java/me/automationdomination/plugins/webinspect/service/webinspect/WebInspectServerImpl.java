@@ -107,10 +107,14 @@ public class WebInspectServerImpl implements WebInspectServer {
 		final HttpResponse httpResponse;
 		
 		final String overridesString = generateOverridesString(scanName);
-		
+
+        //added for WebInspect v.10.30
+        final StringEntity entity = new StringEntity("settingsName=" + settings + "&overrides=" + overridesString, Consts.UTF_8);
+        entity.setContentType("application/x-www-form-urlencoded");
+
 		final HttpPost httpPost = new HttpPost(webInspectServerUrl);
-		httpPost.setEntity(new StringEntity("settingsName=" + settings + "&overrides=" + overridesString, Consts.UTF_8));
-		
+		httpPost.setEntity(entity);
+
 		try {
 			httpResponse = httpClient.execute(httpPost);
 		} catch (final ClientProtocolException e) {
