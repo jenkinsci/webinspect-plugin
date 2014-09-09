@@ -70,8 +70,8 @@ public class WebInspectPublisher extends Recorder {
         
         final WebInspectServer webInspectServer = new WebInspectServerImpl(webInspectUrl);
         final WebInspectService webInspectService = new WebInspectServiceImpl(webInspectServer);
-         /*
-      if (sscService.uploadScanFile != null) {
+
+      if (sscService.uploadFpr(fprScanFile, projectVersionId) != null) {
             logger.info("FPR WebInspect scan file uploaded successfully to SSC!");
 
         } else {
@@ -79,15 +79,11 @@ public class WebInspectPublisher extends Recorder {
         }
 
         logger.info("threadfix publisher execution complete");
-        }
-        */
 
         //webInspectService.retrieveAndWriteScanFile(settingsFile, "TESTETESTE69", "/tmp/teste69.fpr");
         webInspectService.retrieveAndWriteScanFile(settingsFile, fprScanFile, fprScanFile);
         
         //sscService.uploadScanFile("/tmp/teste69.fpr");
-        sscService.uploadScanFile(fprScanFile);
-        
         return true;
     }
 
