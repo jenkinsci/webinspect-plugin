@@ -10,10 +10,10 @@
 A [WebInspect Enterprise or Desktop installation](https://download.hpsmartupdate.com/webinspect/) deployment with an *API Key* created from your SSC installation.
 
 ### Jenkins Global Config ###
-![Global Configuration for WebInspect Jenkins Plugin]()
+![Global Configuration for WebInspect Jenkins Plugin](https://raw.githubusercontent.com/automationdomination/webinspect-plugin/develop_bms/screenshots/WebInspectPluginGlobal.png)
 
 ### Jenkins Project Config ###
-![Project Configuration for WebInspect Jenkins Plugin]()
+![Project Configuration for WebInspect Jenkins Plugin](https://raw.githubusercontent.com/automationdomination/webinspect-plugin/develop_bms/screenshots/WebInspectPluginProject.png)
 
 ### License ###
 MIT License (MIT)
