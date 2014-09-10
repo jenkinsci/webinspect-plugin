@@ -7,7 +7,7 @@
 - Ability to specify any scan filename under the Project's workspace using Jenkin's environmental variables.
 
 ### Installation & Setup ###
-A [WebInspect Enterprise or Desktop installation](https://download.hpsmartupdate.com/webinspect/) deployment with an *API Key* created from your SSC installation.
+A [WebInspect Enterprise or Desktop installation](https://download.hpsmartupdate.com/webinspect/) deployment with an *API Key* created from your [SSC installation](http://www8.hp.com/us/en/software-solutions/fortify-software-security-tracking/).
 
 ### Jenkins Global Config ###
 ![Global Configuration for WebInspect Jenkins Plugin](https://github.com/automationdomination/webinspect-plugin/blob/develop_bms/images/WebInspectPluginGlobal.png)
