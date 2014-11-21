@@ -10,10 +10,10 @@
 A [WebInspect Enterprise or Desktop installation](https://download.hpsmartupdate.com/webinspect/) deployment with an *API Key* created from your [SSC installation](http://www8.hp.com/us/en/software-solutions/fortify-software-security-tracking/).
 
 ### Jenkins Global Config ###
-![Global Configuration for WebInspect Jenkins Plugin](https://github.com/automationdomination/webinspect-plugin/blob/develop_bms/images/WebInspectPluginGlobal.png)
+![Global Configuration for WebInspect Jenkins Plugin](https://github.com/jenkinsci/webinspect-plugin/blob/master/images/WebInspectPluginGlobal.png)
 
 ### Jenkins Project Config ###
-![Project Configuration for WebInspect Jenkins Plugin](https://github.com/automationdomination/webinspect-plugin/blob/develop_bms/images/WebInspectPluginProject.png)
+![Project Configuration for WebInspect Jenkins Plugin](https://github.com/jenkinsci/webinspect-plugin/blob/master/images/WebInspectPluginProject.png)
 
 ### License ###
 MIT License (MIT)
