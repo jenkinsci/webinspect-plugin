@@ -70,7 +70,7 @@
 		<commons.validator.version>1.4.0</commons.validator.version>
 		<junit.version>4.11</junit.version>
 		<easymock.version>3.2</easymock.version>
-		<httpclient.version>4.3.5</httpclient.version>
+		<httpclient.version>4.5.13</httpclient.version>
 		<jackson.databind.version>2.4.2</jackson.databind.version>
 	</properties>
 
