@@ -71,7 +71,7 @@
 		<junit.version>4.11</junit.version>
 		<easymock.version>3.2</easymock.version>
 		<httpclient.version>4.3.5</httpclient.version>
-		<jackson.databind.version>2.4.2</jackson.databind.version>
+		<jackson.databind.version>2.12.7.1</jackson.databind.version>
 	</properties>
 
 	<dependencies>
